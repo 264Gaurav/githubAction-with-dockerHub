@@ -1,5 +1,5 @@
 # use the python 3.11-slim image from dockerhub
-FROM python:3.11-slim
+FROM python:3.10-slim
 
 # set the working directory
 WORKDIR /app
