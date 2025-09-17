@@ -4,6 +4,10 @@
 
 `conda activate /Users/baqirrizvi/Desktop/MLOps/github-action-with-dockerhub/action`
 
+### You can directly pull the docker image of this project and use it :
+
+`docker pull gauravsingh45/github-action:latest`
+
 ---
 
 # CI/CD with github action :
