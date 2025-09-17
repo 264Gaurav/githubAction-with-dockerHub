@@ -2,7 +2,7 @@
 
 ### activate the conda environment :(e.g.,)
 
-`conda activate /Users/baqirrizvi/Desktop/MLOps/github-action-with-dockerhub/action`
+`conda activate /Users/264gaurav/Desktop/MLOps/github-action-with-dockerhub/action`
 
 ---
 
