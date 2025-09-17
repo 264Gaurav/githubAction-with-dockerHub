@@ -57,7 +57,7 @@ jobs:
           file: ./docker/Dockerfile
           push: false
           tags: |
-            ${{ env.DOCKER_IMAGE }}:ci-${{ github.sha }}
+            ${{ env.DOCKER_IMAG}}:ci-${{ github.sha }}
 
   docker-publish:
     name: Push Docker image to Docker Hub
