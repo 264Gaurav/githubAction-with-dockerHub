@@ -4,6 +4,10 @@
 
 `conda activate /Users/264gaurav/Desktop/MLOps/github-action-with-dockerhub/action`
 
+### You can directly pull the docker image of this project and use it :
+
+`docker pull gauravsingh45/github-action:latest`
+
 ---
 
 # CI/CD with github action :
@@ -215,3 +219,5 @@ Visit the **Actions** tab in the GitHub repository. Select the workflow run, ope
 - Prefer storing full image name in a single secret (`DOCKER_IMAGE`) to avoid composition errors.
 - Use Git tags + `on: push: tags:` to create release images matching semantic versions.
 - Consider adding image scanning or signing steps for production deployments.
+
+---
