@@ -65,7 +65,7 @@ jobs:
         with:
           context: .
           # CHANGE THIS if your Dockerfile is in a subdirectory
-          file: ./Dockerfile
+          file: ./docker/Dockerfile
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:latest
