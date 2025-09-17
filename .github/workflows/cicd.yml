@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
-      DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }} # e.g., johnsmith/myapp
+      DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

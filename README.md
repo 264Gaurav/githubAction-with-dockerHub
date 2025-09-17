@@ -215,5 +215,3 @@ Visit the **Actions** tab in the GitHub repository. Select the workflow run, ope
 - Prefer storing full image name in a single secret (`DOCKER_IMAGE`) to avoid composition errors.
 - Use Git tags + `on: push: tags:` to create release images matching semantic versions.
 - Consider adding image scanning or signing steps for production deployments.
-
----
