@@ -63,7 +63,7 @@ jobs:
           file: ./docker/Dockerfile
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
-            ${{ env.DOCKER_IMAGE }}:ci-${{ github.sha }}
+            ${{ secrets.DOCKER_IMAGE }}:ci-${{ github.sha }}
       - name: Report results to PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
@@ -118,5 +118,5 @@ jobs:
           file: ./docker/Dockerfile
           push: true
           tags: |
-            ${{ env.DOCKER_IMAGE }}:latest
-            ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+            ${{ secrets.DOCKER_IMAGE }}:latest
+            ${{ secrets.DOCKER_IMAGE }}:${{ github.sha }}
