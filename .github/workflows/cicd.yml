@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +36,7 @@ jobs:
 
   deploy:
     name: Build and push Docker image to Docker Hub
-    needs: build
+    needs: build-and-test
     runs-on: ubuntu-latest
     # only run deployment when this workflow is triggered by a push to main
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -65,11 +65,3 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          # optional: build for multiple platforms (remove if not needed)
-          # platforms: linux/amd64,linux/arm64
-          # tags: |
-          #   ${{ env.IMAGE_NAME }}:latest
-          #   ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          # optional build cache (uncomment if you want caching)
-          # cache-from: type=gha
-          # cache-to: type=gha,mode=max
