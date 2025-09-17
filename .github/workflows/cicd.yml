@@ -38,13 +38,20 @@ jobs:
     name: Build and push Docker image to Docker Hub
     needs: build-and-test
     runs-on: ubuntu-latest
-    # only run deployment when this workflow is triggered by a push to main
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
+      # Ensure these secrets exist. Better approach: set DOCKER_IMAGE to "myuser/myrepo" as a single secret.
       IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Validate IMAGE_NAME is set
+        # This checks IMAGE_NAME exists without printing it (avoids leaking secret value)
+        run: |
+          if [ -z "${IMAGE_NAME}" ]; then
+            echo "ERROR: IMAGE_NAME is empty — set secrets DOCKER_USERNAME and IMAGE_NAME (or DOCKER_IMAGE)"; exit 1
+          fi
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -56,7 +63,6 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
-          # prefer a personal access token; you can also use DOCKERHUB_PASSWORD
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
@@ -65,3 +71,9 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          # REQUIRED: at least one tag when push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          # optional: build for multiple platforms
+          # platforms: linux/amd64,linux/arm64
