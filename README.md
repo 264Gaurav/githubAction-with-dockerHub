@@ -9,7 +9,7 @@
 # CI/CD with github action :
 
 [![CI status](https://img.shields.io/badge/ci-github--actions-blue.svg)](#)
-![CI/CD](https://github.com/264Gaurav/githubAction-with-dockerHub/actions/workflows/ci.yml/badge.svg)
+![CI/CD](https://github.com/264Gaurav/githubAction-with-dockerHub/actions/workflows/cicd.yml/badge.svg)
 
 ## Purpose
 
