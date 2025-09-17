@@ -1,0 +1,41 @@
+# use the python 3.11-slim image from dockerhub
+FROM python:3.11-slim
+
+# set the working directory
+WORKDIR /app
+
+# install dependencies first for better layer caching
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# copy the rest of the application code
+COPY . .
+
+# expose the port 5000 to match Flask app
+EXPOSE 5000
+
+# run the app.py file
+CMD ["python", "app.py"]
+
+
+
+
+
+# # use the python 3.11-slim image from dockerhub
+# FROM python:3.11-slim
+
+# # set the working directory
+# WORKDIR /app
+
+# # copy the requirements.txt file to the working directory
+# COPY . /app
+
+# # copy the requirements.txt file to the working directory
+# COPY requirements.txt ./
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# # expose the port 5050
+# EXPOSE 5050
+
+# # run the app.py file
+# CMD ["python", "app.py"]
