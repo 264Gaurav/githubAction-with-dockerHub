@@ -31,44 +31,56 @@ jobs:
       - name: Test with pytest
         run: pytest
 
-  deploy:
-    name: Build and push Docker image to Docker Hub
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    env:
-      IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+ deploy:
+  name: Build and push Docker image to Docker Hub
+  needs: build-and-test
+  runs-on: ubuntu-latest
+  if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  env:
+    DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}   # e.g., johnsmith/myapp
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Validate IMAGE_NAME is set
-        run: |
-          if [ -z "${IMAGE_NAME}" ]; then
-            echo "ERROR: IMAGE_NAME is empty — set secrets DOCKER_USERNAME and IMAGE_NAME (or DOCKER_IMAGE)"; exit 1
-          fi
+    - name: Ensure Docker Hub repository exists
+      run: |
+        USERNAME="${{ secrets.DOCKER_USERNAME }}"
+        PASSWORD="${{ secrets.DOCKER_PASSWORD }}"
+        REPO="${DOCKER_IMAGE#*/}"  # Extract repo name after username/
+        ORG="${DOCKER_IMAGE%%/*}"  # Extract username/org
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        echo "Checking if repo $DOCKER_IMAGE exists..."
+        STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "$USERNAME:$PASSWORD" \
+          https://hub.docker.com/v2/repositories/$DOCKER_IMAGE/)
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        if [ "$STATUS" -eq 200 ]; then
+          echo "✅ Repo already exists: $DOCKER_IMAGE"
+        else
+          echo "🚀 Creating repo: $DOCKER_IMAGE"
+          curl -s -o /dev/null -w "%{http_code}" -u "$USERNAME:$PASSWORD" \
+            -H "Content-Type: application/json" \
+            -X POST https://hub.docker.com/v2/repositories/ \
+            -d "{\"namespace\": \"$ORG\", \"name\": \"$REPO\", \"is_private\": false}"
+        fi
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          # CHANGE THIS if your Dockerfile is in a subdirectory
-          file: ./docker/Dockerfile
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          # optional: build for multiple platforms
-          # platforms: linux/amd64,linux/arm64
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: ./docker/Dockerfile
+        push: true
+        tags: |
+          ${{ env.DOCKER_IMAGE }}:latest
+          ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
