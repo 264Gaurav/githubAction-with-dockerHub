@@ -26,13 +26,10 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with flake8
         run: |
-          # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
-        run: |
-          pytest
+        run: pytest
 
   deploy:
     name: Build and push Docker image to Docker Hub
@@ -40,14 +37,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
-      # Ensure these secrets exist. Better approach: set DOCKER_IMAGE to "myuser/myrepo" as a single secret.
       IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE_NAME }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Validate IMAGE_NAME is set
-        # This checks IMAGE_NAME exists without printing it (avoids leaking secret value)
         run: |
           if [ -z "${IMAGE_NAME}" ]; then
             echo "ERROR: IMAGE_NAME is empty — set secrets DOCKER_USERNAME and IMAGE_NAME (or DOCKER_IMAGE)"; exit 1
@@ -69,9 +64,9 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: dockerfile
+          # CHANGE THIS if your Dockerfile is in a subdirectory
+          file: ./Dockerfile
           push: true
-          # REQUIRED: at least one tag when push: true
           tags: |
             ${{ env.IMAGE_NAME }}:latest
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
